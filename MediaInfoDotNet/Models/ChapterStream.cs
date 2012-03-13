@@ -22,10 +22,9 @@ namespace MediaInfoDotNet.Models
 		/// <summary>ChapterStream constructor.</summary>
 		/// <param name="mediaInfo">A MediaInfo object.</param>
 		/// <param name="id">The MediaInfo ID for this chapter stream.</param>
-		public ChapterStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			streamKind = StreamKind.Chapters;
+		public ChapterStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
+			base.streamKind = StreamKind.Chapters;
 		}
 
 	}

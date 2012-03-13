@@ -55,7 +55,8 @@ namespace MediaInfoLib
 		Audio,
 		Text,
 		Chapters,
-		Image
+		Image,
+		Menu
 	}
 
 	public enum InfoKind

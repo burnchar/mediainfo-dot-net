@@ -31,25 +31,13 @@ using MediaInfoDotNet.Models;
 namespace MediaInfoDotNet
 {
 	/// <summary>Represents a media file.</summary>
-	public sealed class MediaFile : GeneralStream, IDisposable
+	public sealed class MediaFile : GeneralStream
 	{
 		/// <summary>MediaFile constructor.</summary>
 		/// <param name="filePath">Complete path and name of a file.</param>
-		/// <example>"c:\pics\me.jpg", "/home/charles/me.jpg"</example>
+		/// <example>"c:\pics\me.jpg", "/home/charles/me.mkv"</example>
 		public MediaFile(string filePath)
-			: base(new MediaInfo(), 0) {
-			if(!isMediaInfoDllCompatible())
-				throw new InvalidOperationException("Incompatible MediaInfo DLL version.");
-			if(filePath == null)
-				throw new ArgumentNullException("File name cannot be null.");
-
-			mediaInfo.Open(filePath);
-		}
-
-
-		/// <summary>Destructor. Disposes of resources.</summary>
-		~MediaFile() {
-			Dispose();
+			: base(filePath) {
 		}
 
 
@@ -81,25 +69,6 @@ namespace MediaInfoDotNet
 				return _Video;
 			}
 		}
-
-		
-		/// <summary>Returns true if MediaInfo.dll is compatible.</summary>
-		bool isMediaInfoDllCompatible() {
-			String ToDisplay =
-				mediaInfo.Option("Info_Version", "0.7.0.0;MediaInfo.Net;0.1");
-			return (ToDisplay.Length > 0 ? true : false);
-		}
-
-		bool disposed = false;
-		/// <summary>Ensures resource disposal.</summary>
-		public void Dispose() {
-			if(disposed == false) {
-				disposed = true;
-				mediaInfo.Close();
-				GC.SuppressFinalize(this);
-			}
-		}
-
 
 	}
 }

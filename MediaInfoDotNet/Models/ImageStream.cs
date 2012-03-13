@@ -22,9 +22,8 @@ namespace MediaInfoDotNet.Models
 		/// <summary>ImageStream constructor.</summary>
 		/// <param name="mediaInfo">A MediaInfo object.</param>
 		/// <param name="id">The MediaInfo ID for this image stream.</param>
-		public ImageStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
+		public ImageStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
 			streamKind = StreamKind.Image;
 		}
 	}

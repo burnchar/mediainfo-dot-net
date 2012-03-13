@@ -17,14 +17,13 @@ namespace MediaInfoDotNet.Models
 {
 	/// <summary>Represents a single menu stream.</summary>
 	sealed class MenuStream : StreamBaseClass
-	{		
+	{
 		/// <summary>MenuStream constructor.</summary>
 		/// <param name="mediaInfo">A MediaInfo object which has already opened a media file.</param>
 		/// <param name="id">The MediaInfo ID for this menu stream.</param>
-		public MenuStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			//streamKind = StreamKind.Menu; /* Not yet included in MediaInfo's C# support file */
+		public MenuStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
+			base.streamKind = StreamKind.Menu;
 		}
 	}
 }

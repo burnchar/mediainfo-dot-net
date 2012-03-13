@@ -20,22 +20,16 @@ namespace MediaInfoDotNet.Models
 	/// <summary>For inheritance by classes representing media files.</summary>
 	public abstract class GeneralStream : StreamBaseClass
 	{
-		/// <summary>Information about this media container or file.</summary>
-		/// <param name="mediaInfo">A MediaInfo object.</param>
-		/// <param name="id">The MediaInfo ID for this stream.</param>
-		public GeneralStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			this.streamKind = StreamKind.General;
 
-			_encodedDate = DateTime.MinValue;
-			_videoCount = int.MinValue;
-			_audioCount = int.MinValue;
-			_size = long.MinValue;
+		/// <summary>GeneralStream constructor.</summary>
+		/// <param name="filePath">Complete path and name of a file.</param>
+		public GeneralStream(string filePath)
+			: base(filePath) {
+			base.streamKind = StreamKind.General;
 		}
 
 
-		DateTime _encodedDate;
+		DateTime _encodedDate = DateTime.MinValue;
 		/// <summary>The date/time this media file was created.</summary>
 		public DateTime encodedDate {
 			get {
@@ -46,7 +40,7 @@ namespace MediaInfoDotNet.Models
 		}
 
 
-		int _videoCount;
+		int _videoCount = int.MinValue;
 		/// <summary>The count of video streams in this file.</summary>
 		public int videoCount {
 			get {
@@ -57,7 +51,7 @@ namespace MediaInfoDotNet.Models
 		}
 
 
-		int _audioCount;
+		int _audioCount = int.MinValue;
 		/// <summary>The count of audio streams in this file.</summary>
 		public int audioCount {
 			get {
@@ -68,7 +62,7 @@ namespace MediaInfoDotNet.Models
 		}
 
 
-		long _size;
+		long _size = long.MinValue;
 		/// <summary>File size, in bytes.</summary>
 		public long size {
 			get {
@@ -79,7 +73,7 @@ namespace MediaInfoDotNet.Models
 		}
 
 
-		int _duration;
+		int _duration = int.MinValue;
 		/// <summary>Duration of the file in milliseconds.</summary>
 		public int duration {
 			get {
@@ -88,8 +82,6 @@ namespace MediaInfoDotNet.Models
 				return _duration;
 			}
 		}
-		
-
 
 	}
 }

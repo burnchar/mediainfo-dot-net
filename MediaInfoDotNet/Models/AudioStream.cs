@@ -22,16 +22,13 @@ namespace MediaInfoDotNet.Models
 		/// <summary>AudioStream constructor.</summary>
 		/// <param name="mediaInfo">A MediaInfo object.</param>
 		/// <param name="id">The MediaInfo ID for this audio stream.</param>
-		public AudioStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			streamKind = StreamKind.Audio;
-
-			_channels = int.MinValue;
+		public AudioStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
+			base.streamKind = StreamKind.Audio;
 		}
-	
-		
-		int _channels;
+
+
+		int _channels = int.MinValue;
 		/// <summary>Number of audio channels, e.g. 6 for 5.1 audio.</summary>
 		public int channels {
 			get {

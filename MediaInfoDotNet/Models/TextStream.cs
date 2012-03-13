@@ -21,11 +21,10 @@ namespace MediaInfoDotNet.Models
 		/// <summary>TextStream constructor.</summary>
 		/// <param name="mediaInfo">A MediaInfo object.</param>
 		/// <param name="id">The MediaInfo ID for this text stream.</param>
-		public TextStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			streamKind = StreamKind.Text;
+		public TextStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
+			base.streamKind = StreamKind.Text;
 		}
-	
+
 	}
 }
