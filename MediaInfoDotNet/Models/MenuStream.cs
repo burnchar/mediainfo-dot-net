@@ -11,20 +11,32 @@
  ******************************************************************************
  */
 
+using System;
 using MediaInfoLib;
+using MediaInfoDotNet.Models;
 
 namespace MediaInfoDotNet.Models
 {
-	/// <summary>Represents a single menu stream.</summary>
-	sealed class MenuStream : StreamBaseClass
-	{		
-		/// <summary>MenuStream constructor.</summary>
-		/// <param name="mediaInfo">A MediaInfo object which has already opened a media file.</param>
-		/// <param name="id">The MediaInfo ID for this menu stream.</param>
-		public MenuStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			//streamKind = StreamKind.Menu; /* Not yet included in MediaInfo's C# support file */
+	///<summary>Represents a single menu stream.</summary>
+	public sealed class MenuStream : Media
+	{
+		readonly MultiStreamCommon streamCommon;
+
+		///<summary>MenuStream constructor.</summary>
+		///<param name="mediaInfo">A MediaInfo object which has already opened a media file.</param>
+		///<param name="id">The MediaInfo ID for this menu stream.</param>
+		public MenuStream(MediaInfo mediaInfo, int id) : base(mediaInfo, id) {
+			kind = StreamKind.Menu;
+			streamCommon = new MultiStreamCommon(mediaInfo, kind, id);
 		}
+
+		public string format { get { return streamCommon.format; } }
+		public string title { get { return streamCommon.title; } }
+		public string uniqueId { get { return streamCommon.uniqueId; } }
+		public string codecId { get { return streamCommon.codecId; } }
+		public string codecCommonName { get { return streamCommon.codecCommonName; } }
+		public int delay { get { return streamCommon.delay; } }
+		public int duration { get { return streamCommon.duration; } }
+		public string language { get { return streamCommon.language; } }
 	}
 }

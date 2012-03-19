@@ -11,44 +11,52 @@
  ******************************************************************************
  */
 
+using System;
 using MediaInfoLib;
 
 namespace MediaInfoDotNet.Models
 {
-	/// <summary>Represents a single video stream.</summary>
-	public sealed class VideoStream : StreamBaseClass
+	///<summary>Represents a single video stream.</summary>
+	public sealed class VideoStream : Media
 	{
-		/// <summary>VideoStream constructor</summary>
-		/// <param name="mediaInfo">A MediaInfo object.</param>
-		/// <param name="id">The MediaInfo ID for this audio stream.</param>
-		public VideoStream(MediaInfo mediaInfo, int id) {
-			this.mediaInfo = mediaInfo;
-			this.id = id;
-			this.streamKind = StreamKind.Video;
-
-			_height = int.MinValue;
-			_width = int.MinValue;
+		readonly MultiStreamCommon streamCommon;
+ 
+		///<summary>VideoStream constructor</summary>
+		///<param name="mediaInfo">A MediaInfo object.</param>
+		///<param name="id">The MediaInfo ID for this audio stream.</param>
+		public VideoStream(MediaInfo mediaInfo, int id) : base(mediaInfo, id) {
+			kind = StreamKind.Video;
+			streamCommon = new MultiStreamCommon(mediaInfo, kind, id);
 		}
 
-	
-		int _height;
-		/// <summary>Height in pixels.</summary>
-		public int height {
-			get {
-				if(_height == int.MinValue) _height = miGetInt("Height");
-				return _height;
-			}
-		}
-
-
-		int _width;
-		/// <summary>Width pixels.</summary>
-		public int width {
-			get {
-				if(_width == int.MinValue) _width = miGetInt("Width");
-				return _width;
-			}
-		}
+		public string format { get { return streamCommon.format; } }
+		public string title { get { return streamCommon.title; } }
+		public string uniqueId { get { return streamCommon.uniqueId; } }
+		public string codecId { get { return streamCommon.codecId; } }
+		public string codecCommonName { get { return streamCommon.codecCommonName; } }
+		public DateTime encodedDate { get { return streamCommon.encodedDate; } }
+		public string encodedLibrary { get { return streamCommon.encodedLibrary; } }
+		public string internetMediaType { get { return streamCommon.internetMediaType; } }
+		public long streamSize { get { return streamCommon.streamSize; } }
+		public int delay { get { return streamCommon.delay; } }
+		public int duration { get { return streamCommon.duration; } }
+		public string language { get { return streamCommon.language; } }
+		public int bitDepth { get { return streamCommon.bitDepth; } }
+		public string compressionMode { get { return streamCommon.compressionMode; } }
+		public string compressionRatio { get { return streamCommon.compressionRatio; } }
+		public int bitRate { get { return streamCommon.bitRate; } }
+		public string bitRateMode { get { return streamCommon.bitRateMode; } }
+		public int bitRateMaximum { get { return streamCommon.bitRateMaximum; } }
+		public int bitRateMinimum { get { return streamCommon.bitRateMinimum; } }
+		public int bitRateNominal { get { return streamCommon.bitRateNominal; } }
+		public int frameCount { get { return streamCommon.frameCount; } }
+		public string muxingMode { get { return streamCommon.muxingMode; } }
+		public int height { get { return streamCommon.height; } }
+		public int width { get { return streamCommon.width; } }
+		public float frameRate { get { return streamCommon.frameRate; } }
+		public string frameRateMode { get { return streamCommon.frameRateMode; } }
+		public float pixelAspectRatio { get { return streamCommon.pixelAspectRatio; } }
+		//{ get { return streamCommon; } }
 
 	}
 }

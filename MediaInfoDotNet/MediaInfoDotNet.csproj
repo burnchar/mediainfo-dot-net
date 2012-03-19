@@ -69,12 +69,14 @@
     <Compile Include="Models\ChapterStream.cs" />
     <Compile Include="Models\GeneralStream.cs" />
     <Compile Include="Models\ImageStream.cs" />
+    <Compile Include="Models\MultiStreamCommon.cs" />
     <Compile Include="Models\MenuStream.cs" />
-    <Compile Include="Models\StreamBaseClass.cs" />
+    <Compile Include="Models\Media.cs" />
     <Compile Include="Models\TextStream.cs" />
     <Compile Include="Models\VideoStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

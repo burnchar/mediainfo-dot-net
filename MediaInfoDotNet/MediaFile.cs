@@ -30,32 +30,33 @@ using MediaInfoDotNet.Models;
 
 namespace MediaInfoDotNet
 {
-	/// <summary>Represents a media file.</summary>
-	public sealed class MediaFile : GeneralStream, IDisposable
+	///<summary>Represents a media file.</summary>
+	public sealed class MediaFile : GeneralStream
 	{
-		/// <summary>MediaFile constructor.</summary>
-		/// <param name="filePath">Complete path and name of a file.</param>
-		/// <example>"c:\pics\me.jpg", "/home/charles/me.jpg"</example>
-		public MediaFile(string filePath)
-			: base(new MediaInfo(), 0) {
-			if(!isMediaInfoDllCompatible())
-				throw new InvalidOperationException("Incompatible MediaInfo DLL version.");
-			if(filePath == null)
-				throw new ArgumentNullException("File name cannot be null.");
-
-			mediaInfo.Open(filePath);
+		///<summary>MediaFile constructor.</summary>
+		///<param name="filePath">Complete path and name of a file.</param>
+		///<example>"c:\pics\me.jpg", "/home/charles/me.mkv"</example>
+		public MediaFile(string filePath) : base(filePath) {
 		}
 
 
-		/// <summary>Destructor. Disposes of resources.</summary>
-		~MediaFile() {
-			Dispose();
+		IDictionary<int, VideoStream> _Video;
+		///<summary>Video streams in this file.</summary>
+		public IDictionary<int, VideoStream> Video {
+			get {
+				if(_Video == null) {
+					_Video = new Dictionary<int, VideoStream>(videoCount);
+					for(int id = 0; id < videoCount; ++id) {
+						_Video.Add(id, new VideoStream(mediaInfo, id));
+					}
+				}
+				return _Video;
+			}
 		}
 
-
-		Dictionary<int, AudioStream> _Audio;
-		/// <summary>Audio streams in this file.</summary>
-		public Dictionary<int, AudioStream> Audio {
+		IDictionary<int, AudioStream> _Audio;
+		///<summary>Audio streams in this file.</summary>
+		public IDictionary<int, AudioStream> Audio {
 			get {
 				if(_Audio == null) {
 					_Audio = new Dictionary<int, AudioStream>(audioCount);
@@ -68,38 +69,65 @@ namespace MediaInfoDotNet
 		}
 
 
-		Dictionary<int, VideoStream> _Video;
-		/// <summary>Video streams in this file.</summary>
-		public Dictionary<int, VideoStream> Video {
+		IDictionary<int, TextStream> _Text;
+		///<summary>Text streams in this file.</summary>
+		public IDictionary<int, TextStream> Text {
 			get {
-				if(_Video == null) {
-					_Video = new Dictionary<int, VideoStream>(videoCount);
-					for(int id = 0; id < videoCount; ++id) {
-						_Video.Add(id, new VideoStream(mediaInfo, id));
+				if(_Text == null) {
+					_Text = new Dictionary<int, TextStream>(textCount);
+					for(int id = 0; id < textCount; ++id) {
+						_Text.Add(id, new TextStream(mediaInfo, id));
 					}
 				}
-				return _Video;
+				return _Text;
 			}
 		}
 
-		
-		/// <summary>Returns true if MediaInfo.dll is compatible.</summary>
-		bool isMediaInfoDllCompatible() {
-			String ToDisplay =
-				mediaInfo.Option("Info_Version", "0.7.0.0;MediaInfo.Net;0.1");
-			return (ToDisplay.Length > 0 ? true : false);
-		}
 
-		bool disposed = false;
-		/// <summary>Ensures resource disposal.</summary>
-		public void Dispose() {
-			if(disposed == false) {
-				disposed = true;
-				mediaInfo.Close();
-				GC.SuppressFinalize(this);
+		IDictionary<int, ImageStream> _Image;
+		///<summary>Image streams in this file.</summary>
+		public IDictionary<int, ImageStream> Image {
+			get {
+				if(_Image == null) {
+					_Image = new Dictionary<int, ImageStream>(imageCount);
+					for(int id = 0; id < imageCount; ++id) {
+						_Image.Add(id, new ImageStream(mediaInfo, id));
+					}
+				}
+				return _Image;
 			}
 		}
 
+
+		IDictionary<int, ChapterStream> _Chapter;
+		///<summary>Chapter streams in this file.</summary>
+		public IDictionary<int, ChapterStream> Chapter {
+			get {
+				if(_Chapter == null) {
+					_Chapter = new Dictionary<int, ChapterStream>(chapterCount);
+					for(int id = 0; id < chapterCount; ++id) {
+						_Chapter.Add(id, new ChapterStream(mediaInfo, id));
+					}
+				}
+				return _Chapter;
+			}
+		}
+
+
+		IDictionary<int, MenuStream> _Menu;
+		///<summary>Menu streams in this file.</summary>
+		public IDictionary<int, MenuStream> Menu {
+			get {
+				if(_Menu == null) {
+					_Menu = new Dictionary<int, MenuStream>(menuCount);
+					for(int id = 0; id < menuCount; ++id) {
+						_Menu.Add(id, new MenuStream(mediaInfo, id));
+					}
+				}
+				return _Menu;
+			}
+		}
+	
 
 	}
 }
