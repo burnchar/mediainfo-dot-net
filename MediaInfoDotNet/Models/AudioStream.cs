@@ -36,7 +36,8 @@ namespace MediaInfoDotNet.Models
 		public string codecId { get { return streamCommon.codecId; } }
 		public string codecCommonName { get { return streamCommon.codecCommonName; } }
 		public DateTime encodedDate { get { return streamCommon.encodedDate; } }
-		public string encodedLibrary { get { return streamCommon.encodedLibrary; } }
+		public string encodedLibrary { get { return streamCommon.encoderLibrary; } }
+		public string encoderSettings { get { return streamCommon.encoderSettings; } }
 		public string internetMediaType { get { return streamCommon.internetMediaType; } }
 		public long streamSize { get { return streamCommon.streamSize; } }
 		public int delay { get { return streamCommon.delay; } }

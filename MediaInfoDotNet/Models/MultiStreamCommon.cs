@@ -233,14 +233,14 @@ namespace MediaInfoDotNet.Models
 		}
 
 
-		string _encodedLibrary = null;
+		string _encoderLibrary = null;
 		///<summary></summary>
 		///<example></example>
-		public string encodedLibrary {
+		public string encoderLibrary {
 			get {
-				if(_encodedLibrary == null)
-					_encodedLibrary = miGetString("Encoded_Library");
-				return _encodedLibrary;
+				if(_encoderLibrary == null)
+					_encoderLibrary = miGetString("Encoded_Library");
+				return _encoderLibrary;
 			}
 		}
 
@@ -264,6 +264,18 @@ namespace MediaInfoDotNet.Models
 				if(_streamSize == long.MinValue)
 					_streamSize = miGetLong("StreamSize");
 				return _streamSize;
+			}
+		}
+
+		
+		string _encoderSettings = null;
+		///<summary>Settings used to configure the encoder.
+		///Format: name=value, each separated with a '/'</summary>
+		public string encoderSettings{
+			get {
+				if(_encoderSettings == null)
+					_encoderSettings = miGetString("Encoded_Library_Settings");
+				return _encoderSettings;
 			}
 		}
 
