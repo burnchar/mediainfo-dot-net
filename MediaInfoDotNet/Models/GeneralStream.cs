@@ -15,6 +15,7 @@
 using System;
 using MediaInfoLib;
 using MediaInfoDotNet.Models;
+using System.Collections.Generic;
 
 namespace MediaInfoDotNet.Models
 {
@@ -25,102 +26,62 @@ namespace MediaInfoDotNet.Models
 
 		///<summary>GeneralStream constructor.</summary>
 		///<param name="filePath">Complete path and name of a file.</param>
-		public GeneralStream(string filePath) : base(filePath) {
+		public GeneralStream(string filePath)
+			: base(filePath) {
 			kind = StreamKind.General;
 			streamCommon = new MultiStreamCommon(mediaInfo, kind, id);
 		}
 
+		#region AllStreamsCommon
+		///<summary>The format or container of this file or stream.</summary>
 		public string format { get { return streamCommon.format; } }
+
+		///<summary>The title of this stream.</summary>
 		public string title { get { return streamCommon.title; } }
+
+		///<summary>This stream's globally unique ID (GUID).</summary>
 		public string uniqueId { get { return streamCommon.uniqueId; } }
-		public string codecId { get { return streamCommon.codecId; } }
-		public string codecCommonName { get { return streamCommon.codecCommonName; } }
+		#endregion
+
+		#region GeneralVideoAudioTextImageCommon
+		///<summary>Date and time stream encoding completed.</summary>
 		public DateTime encodedDate { get { return streamCommon.encodedDate; } }
+
+		///<summary>Software used to encode this stream.</summary>
 		public string encodedLibrary { get { return streamCommon.encoderLibrary; } }
-		public string encoderSettings { get { return streamCommon.encoderSettings; } }
+
+		///<summary>Media type of stream, formerly called MIME type.</summary>
 		public string internetMediaType { get { return streamCommon.internetMediaType; } }
-		public long streamSize { get { return streamCommon.streamSize; } }
+
+		///<summary>Size in bytes.</summary>
+		public long size { get { return streamCommon.size; } }
+
+		///<summary>Encoder settings used for encoding this stream.
+		///String format: name=value / name=value / ...</summary>
+		public string encoderSettingsRaw { get { return streamCommon.encoderSettingsRaw; } }
+
+		///<summary>Encoder settings used for encoding this stream.</summary>
+		public IDictionary<string, string> encoderSettings { get { return streamCommon.encoderSettings; } }
+		#endregion
+
+		#region GeneralVideoAudioTextImageMenuCommon
+		///<summary>Codec ID available from some codecs.</summary>
+		///<example>AAC audio:A_AAC, h.264 video:V_MPEG4/ISO/AVC</example>
+		public string codecId { get { return streamCommon.codecId; } }
+
+		///<summary>Common name of the codec.</summary>
+		public string codecCommonName { get { return streamCommon.codecCommonName; } }
+		#endregion
+
+		#region GeneralVideoAudioTextMenu
+		///<summary>Stream delay (e.g. to sync audio/video) in ms.</summary>
 		public int delay { get { return streamCommon.delay; } }
+
+		///<summary>Duration of the stream in milliseconds.</summary>
 		public int duration { get { return streamCommon.duration; } }
+		#endregion
 
-
-		int _videoCount = int.MinValue;
-		///<summary>Number of video streams in this file.</summary>
-		protected int videoCount {
-			get {
-				if(_videoCount == int.MinValue)
-					_videoCount = miGetInt("VideoCount");
-				return _videoCount;
-			}
-		}
-
-
-		int _audioCount = int.MinValue;
-		///<summary>Number of audio streams in this file.</summary>
-		protected int audioCount {
-			get {
-				if(_audioCount == int.MinValue)
-					_audioCount = miGetInt("AudioCount");
-				return _audioCount;
-			}
-		}
-
-
-		int _textCount = int.MinValue;
-		///<summary>Number of subtitles or other texts in this file.</summary>
-		protected int textCount {
-			get {
-				if(_textCount == int.MinValue)
-					_textCount = miGetInt("TextCount");
-				return _textCount;
-			}
-		}
-
-
-		int _imageCount = int.MinValue;
-		///<summary>Number of images in this file.</summary>
-		protected int imageCount {
-			get {
-				if(_imageCount == int.MinValue)
-					_imageCount = miGetInt("ImageCount");
-				return _imageCount;
-			}
-		}
-
-
-		int _chapterCount = int.MinValue;
-		///<summary>Number of chapters in this file.</summary>
-		protected int chapterCount {
-			get {
-				if(_chapterCount == int.MinValue)
-					_chapterCount = miGetInt("ChaptersCount");
-				return _chapterCount;
-			}
-		}
-
-
-		int _menuCount = int.MinValue;
-		///<summary>Number of menu streams in this file.</summary>
-		protected int menuCount {
-			get {
-				if(_menuCount == int.MinValue)
-					_menuCount = miGetInt("MenuCount");
-				return _menuCount;
-			}
-		}
-
-	
-		long _size = long.MinValue;
-		///<summary>File size, in bytes.</summary>
-		public long size {
-			get {
-				if(_size == long.MinValue)
-					_size = miGetLong("FileSize");
-				return _size;
-			}
-		}
-
-
+		#region General
 		string _encodedBy;
 		///<summary>Name of the person/group who encoded this file.</summary>
 		public string encodedBy {
@@ -130,7 +91,6 @@ namespace MediaInfoDotNet.Models
 				return _encodedBy;
 			}
 		}
-
 
 		string _album;
 		///<summary>Album name, if the file represents an album.</summary>
@@ -142,11 +102,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
-
 		string _iTunesGrouping = null;
-		///<summary></summary>
-		///<example></example>
+		///<summary>The grouping used by iTunes.</summary>
 		public string iTunesGrouping {
 			get {
 				if(_iTunesGrouping == null)
@@ -155,10 +112,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		string _iTunesCompilation = null;
-		///<summary></summary>
-		///<example></example>
+		///<summary>The compilation used by iTunes.</summary>
 		public string iTunesCompilation {
 			get {
 				if(_iTunesCompilation == null)
@@ -167,10 +122,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		int _bitRate = int.MinValue;
-		///<summary>Overall bitrate of all streams in this file.</summary>
-		///<example></example>
+		///<summary>Overall bitrate of all streams.</summary>
 		public int bitRate {
 			get {
 				if(_bitRate == int.MinValue)
@@ -179,11 +132,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
-
 		int _bitRateMaximum = int.MinValue;
-		///<summary></summary>
-		///<example></example>
+		///<summary>Maximum overall bitrate of all streams.</summary>
 		public int bitRateMaximum {
 			get {
 				if(_bitRateMaximum == int.MinValue)
@@ -192,10 +142,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		int _bitRateMinimum = int.MinValue;
-		///<summary></summary>
-		///<example></example>
+		///<summary>Minimum overall bitrate of all streams.</summary>
 		public int bitRateMinimum {
 			get {
 				if(_bitRateMinimum == int.MinValue)
@@ -204,10 +152,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		int _bitRateNominal = int.MinValue;
-		///<summary></summary>
-		///<example></example>
+		///<summary>Maximum allowed overall bitrate of all streams.</summary>
 		public int bitRateNominal {
 			get {
 				if(_bitRateNominal == int.MinValue)
@@ -215,8 +161,68 @@ namespace MediaInfoDotNet.Models
 				return _bitRateNominal;
 			}
 		}
-			
-				
+		#endregion
 
+		#region InternalUse
+		int _videoCount = int.MinValue;
+		///<summary>Number of video streams in this file.</summary>
+		protected int videoCount {
+			get {
+				if(_videoCount == int.MinValue)
+					_videoCount = miGetInt("VideoCount");
+				return _videoCount;
+			}
+		}
+
+		int _audioCount = int.MinValue;
+		///<summary>Number of audio streams in this file.</summary>
+		protected int audioCount {
+			get {
+				if(_audioCount == int.MinValue)
+					_audioCount = miGetInt("AudioCount");
+				return _audioCount;
+			}
+		}
+
+		int _textCount = int.MinValue;
+		///<summary>Number of subtitles or other texts in this file.</summary>
+		protected int textCount {
+			get {
+				if(_textCount == int.MinValue)
+					_textCount = miGetInt("TextCount");
+				return _textCount;
+			}
+		}
+
+		int _imageCount = int.MinValue;
+		///<summary>Number of images in this file.</summary>
+		protected int imageCount {
+			get {
+				if(_imageCount == int.MinValue)
+					_imageCount = miGetInt("ImageCount");
+				return _imageCount;
+			}
+		}
+
+		int _chapterCount = int.MinValue;
+		///<summary>Number of chapters in this file.</summary>
+		protected int chapterCount {
+			get {
+				if(_chapterCount == int.MinValue)
+					_chapterCount = miGetInt("ChaptersCount");
+				return _chapterCount;
+			}
+		}
+
+		int _menuCount = int.MinValue;
+		///<summary>Number of menu streams in this file.</summary>
+		protected int menuCount {
+			get {
+				if(_menuCount == int.MinValue)
+					_menuCount = miGetInt("MenuCount");
+				return _menuCount;
+			}
+		}
+		#endregion
 	}
 }
