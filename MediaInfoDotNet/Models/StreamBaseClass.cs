@@ -17,16 +17,52 @@ using MediaInfoLib;
 namespace MediaInfoDotNet.Models
 {
 	/// <summary>Implements features common to all media types.</summary>
-	public abstract class StreamBaseClass
+	public abstract class StreamBaseClass : IDisposable
 	{
+		/// <summary>Used to create a stream-specific object, such as an audio
+		/// stream, for use by an existing MediaInfo object.</summary>
+		/// <param name="mediaInfo">A pre-initialized MediaInfo object.</param>
+		/// <param name="id">The MediaInfo ID for this stream.</param>
+		public StreamBaseClass(MediaInfo mediaInfo, int id) {
+			string errorText;
+			this.mediaInfo = mediaInfo;
+			if(mediaInfo == null) {
+				errorText = "MediaInfo object cannot be null.";
+				throw new ArgumentNullException(errorText);
+			}
+			else if(!isMediaInfoDllCompatible()) {
+				errorText = "Incompatible version of MediaInfo.DLL";
+				throw new InvalidOperationException(errorText);
+			}
+			else {				
+				this.id = id;
+			}
+
+		}
+
+		/// <summary>Complete path to the currently opened media file.</summary>
+		public string filePath { get; private set; }
+
+		/// <summary>Initializes the initial MediaInfo object.</summary>
+		/// <param name="filePath">Complete path and name of a file.</param>
+		public StreamBaseClass(string filePath) {
+			if(filePath == null)
+				throw new ArgumentNullException("File name cannot be null.");
+			this.mediaInfo = new MediaInfo();
+			mediaInfo.Open(filePath);
+			this.filePath = filePath;
+		}
+
+
 		/// <summary>MediaInfo object</summary>
-		protected MediaInfo mediaInfo;
+		protected MediaInfo mediaInfo { get; private set; }
 
 		/// <summary>MediaInfo ID for this stream kind.</summary>
-		protected int id;
+		protected int id { get; private set; }
 
 		/// <summary>MediaInfo stream kind.</summary>
 		protected StreamKind streamKind;
+
 
 		string _format;
 		/// <summary>The format or container of this file or stream.</summary>
@@ -86,6 +122,31 @@ namespace MediaInfoDotNet.Models
 		public string miGetString(string parameter) {
 			string miResult = mediaInfo.Get(streamKind, id, parameter);
 			return miResult == null ? string.Empty : miResult;
+		}
+
+
+		/// <summary>Destructor. Disposes of resources.</summary>
+		~StreamBaseClass() {
+			Dispose();
+		}
+
+
+		bool disposed = false;
+		/// <summary>Ensures resource disposal.</summary>
+		public void Dispose() {
+			if(disposed == false) {
+				disposed = true;
+				mediaInfo.Close();
+				GC.SuppressFinalize(this);
+			}
+		}
+
+
+		/// <summary>Returns true if MediaInfo.dll is compatible.</summary>
+		bool isMediaInfoDllCompatible() {
+			String ToDisplay =
+				mediaInfo.Option("Info_Version", "0.7.0.0;MediaInfo.Net;0.1");
+			return (ToDisplay.Length > 0 ? true : false);
 		}
 
 	}
