@@ -26,15 +26,21 @@ namespace MediaInfoDotNet.Models
 		///<summary>ChapterStream constructor.</summary>
 		///<param name="mediaInfo">A MediaInfo object.</param>
 		///<param name="id">The MediaInfo ID for this chapter stream.</param>
-		public ChapterStream(MediaInfo mediaInfo, int id) : base(mediaInfo, id) {
+		public ChapterStream(MediaInfo mediaInfo, int id)
+			: base(mediaInfo, id) {
 			kind = StreamKind.Chapters;
 			streamCommon = new MultiStreamCommon(mediaInfo, kind, id);
 		}
 
+		#region AllStreamsCommon
+		///<summary>The format or container of this file or stream.</summary>
 		public string format { get { return streamCommon.format; } }
-		public string title { get { return streamCommon.title; } }
-		public string uniqueId { get { return streamCommon.uniqueId; } }
-	
 
+		///<summary>The title of this stream.</summary>
+		public string title { get { return streamCommon.title; } }
+
+		///<summary>This stream's globally unique ID (GUID).</summary>
+		public string uniqueId { get { return streamCommon.uniqueId; } }
+		#endregion
 	}
 }

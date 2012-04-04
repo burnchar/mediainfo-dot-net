@@ -21,7 +21,7 @@ namespace MediaInfoDotNet.Models
 	public abstract class Media : IDisposable
 	{
 		///<summary>Used to create a stream-specific object, such as an audio
-		///stream, for use by an existing MediaInfo object.</summary>
+		///stream, for use by an existing MediaFile object.</summary>
 		///<param name="mediaInfo">A pre-initialized MediaInfo object.</param>
 		///<param name="id">The MediaInfo ID for this stream.</param>
 		public Media(MediaInfo mediaInfo, int id) {
@@ -35,10 +35,9 @@ namespace MediaInfoDotNet.Models
 				errorText = "Incompatible version of MediaInfo.DLL";
 				throw new InvalidOperationException(errorText);
 			}
-			else {				
+			else {
 				this.id = id;
 			}
-
 		}
 
 		///<summary>Complete path to the current media file.</summary>
@@ -62,7 +61,15 @@ namespace MediaInfoDotNet.Models
 
 		///<summary>MediaInfo stream kind.</summary>
 		protected StreamKind kind;
-		
+
+		#region MediaInfoLibraryCalls
+		/// <summary>Returns information about MediaInfo.</summary>
+		/// <param name="parameter">Option such as Info_Parameters</param>
+		public string miOption(string parameter) {
+			string miResult = mediaInfo.Option(parameter);
+			return miResult == null ? string.Empty : miResult;
+		}
+
 		///<summary>Returns a MediaInfo value, "" if error.</summary>
 		///<param name="parameter">The MediaInfo parameter.</param>
 		public string miGetString(string parameter) {
@@ -113,9 +120,9 @@ namespace MediaInfoDotNet.Models
 
 		///<summary>Returns a MediaInfo date, Minval if error.</summary>
 		///<param name="parameter">The MediaInfo parameter.</param>
-		protected DateTime miGetDateTime(string parameter, string format = "'UTC' yyyy-MM-dd HH:mm:ss") {
-			// UTC 2012-03-07 01:53:02
-			// UTC yyyy-MM-dd HH:mm:ss
+		///<param name="format">The DateTime format for TryParseExact()</param>
+		protected DateTime miGetDateTime(string parameter,
+			string format = "'UTC' yyyy-MM-dd HH:mm:ss") {
 			DateTime parsedValue = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
 			string miResult = mediaInfo.Get(kind, id, parameter);
 			DateTime.TryParseExact(miResult, format,
@@ -125,6 +132,15 @@ namespace MediaInfoDotNet.Models
 		}
 
 
+		///<summary>Returns true if MediaInfo.dll is compatible.</summary>
+		bool isMediaInfoDllCompatible() {
+			String ToDisplay =
+				mediaInfo.Option("Info_Version", "0.7.0.0;MediaInfo.Net;0.1");
+			return (ToDisplay.Length > 0 ? true : false);
+		}
+		#endregion
+
+		#region IDisposable
 		///<summary>Destructor. Disposes of resources.</summary>
 		~Media() {
 			Dispose();
@@ -140,14 +156,6 @@ namespace MediaInfoDotNet.Models
 				GC.SuppressFinalize(this);
 			}
 		}
-
-
-		///<summary>Returns true if MediaInfo.dll is compatible.</summary>
-		bool isMediaInfoDllCompatible() {
-			String ToDisplay =
-				mediaInfo.Option("Info_Version", "0.7.0.0;MediaInfo.Net;0.1");
-			return (ToDisplay.Length > 0 ? true : false);
-		}
-
+		#endregion
 	}
 }

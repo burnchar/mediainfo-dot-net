@@ -1,19 +1,24 @@
 ﻿using System;
 using MediaInfoLib;
+using System.Collections.Generic;
 
 namespace MediaInfoDotNet.Models
 {
+	/// <summary>Functionality common to more than one stream type.</summary>
 	public class MultiStreamCommon : Media
 	{
+		/// <summary>MultiStreamCommon constructor.</summary>
+		///<param name="mediaInfo">A MediaInfo object.</param>
+		/// <param name="kind">A MediaInfo StreamKind.</param>
+		///<param name="id">The MediaInfo ID for this audio stream.</param>
 		public MultiStreamCommon(MediaInfo mediaInfo, StreamKind kind, int id)
 			: base(mediaInfo, id) {
-				this.kind = kind;
+			this.kind = kind;
 		}
 
 		#region AllStreamsCommon
 		string _format;
 		///<summary>The format or container of this file or stream.</summary>
-		///<example>Matroska, Windows Media, JPEG, MPEG-4.</example>
 		public string format {
 			get {
 				if(_format == null)
@@ -22,9 +27,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		string _title;
-		///<summary>The title of the movie, track, song, etc..</summary>
+		///<summary>The title of this stream.</summary>
 		public string title {
 			get {
 				if(_title == null)
@@ -32,7 +36,6 @@ namespace MediaInfoDotNet.Models
 				return _title;
 			}
 		}
-
 
 		string _uniqueId;
 		///<summary>This stream's globally unique ID (GUID).</summary>
@@ -45,140 +48,81 @@ namespace MediaInfoDotNet.Models
 		}
 		#endregion
 
-		#region VideoAudioTextCommon
-
-		int _bitRate = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int bitRate {
+		#region GeneralVideoAudioTextImageCommon
+		DateTime _encodedDate = DateTime.MinValue;
+		///<summary>Date and time stream encoding completed.</summary>
+		public DateTime encodedDate {
 			get {
-				if(_bitRate == int.MinValue)
-					_bitRate = miGetInt("BitRate");
-				return _bitRate;
+				if(_encodedDate == DateTime.MinValue)
+					_encodedDate = miGetDateTime("Encoded_Date");
+				return _encodedDate;
 			}
 		}
 
-
-		int _bitRateMaximum = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int bitRateMaximum {
+		string _encoderLibrary = null;
+		///<summary>Software used to encode this stream.</summary>
+		public string encoderLibrary {
 			get {
-				if(_bitRateMaximum == int.MinValue)
-					_bitRateMaximum = miGetInt("BitRate_Maximum");
-				return _bitRateMaximum;
+				if(_encoderLibrary == null)
+					_encoderLibrary = miGetString("Encoded_Library");
+				return _encoderLibrary;
 			}
 		}
 
-
-		int _bitRateMinimum = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int bitRateMinimum {
+		string _internetMediaType = null;
+		///<summary>Media type of stream, formerly called MIME type.</summary>
+		public string internetMediaType {
 			get {
-				if(_bitRateMinimum == int.MinValue)
-					_bitRateMinimum = miGetInt("BitRate_Minimum");
-				return _bitRateMinimum;
+				if(_internetMediaType == null)
+					_internetMediaType = miGetString("InternetMediaType");
+				return _internetMediaType;
 			}
 		}
 
-
-		int _bitRateNominal = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int bitRateNominal {
+		long _size = long.MinValue;
+		///<summary>Size in bytes.</summary>
+		public long size {
 			get {
-				if(_bitRateNominal == int.MinValue)
-					_bitRateNominal = miGetInt("BitRate_Nominal");
-				return _bitRateNominal;
-			}
-		}
-			
-
-		int _frameCount = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int frameCount {
-			get {
-				if(_frameCount == int.MinValue)
-					_frameCount = miGetInt("FrameCount");
-				return _frameCount;
+				if(_size == long.MinValue) {
+					if(kind == StreamKind.General)
+						_size = miGetLong("FileSize");
+					else
+						_size = miGetLong("StreamSize");
+				}
+				return _size;
 			}
 		}
 
-
-		string _bitRateMode = null;
-		///<summary>Mode by which bits are allocated over time.</summary>
-		///<example>Variable bit rate:VBR, Constant bit rate:CBR</example>
-		public string bitRateMode {
+		string _encoderSettingsRaw = null;
+		///<summary>Encoder settings used for encoding this stream.
+		///String format: name=value / name=value / ...</summary>
+		public string encoderSettingsRaw {
 			get {
-				if(_bitRateMode == null)
-					_bitRateMode = miGetString("BitRate_Mode");
-				return _bitRateMode;
+				if(_encoderSettingsRaw == null)
+					_encoderSettingsRaw
+						= miGetString("Encoded_Library_Settings");
+				return _encoderSettingsRaw;
 			}
 		}
 
-
-		string _muxingMode = null;
-		///<summary>How the stream is muxed into the container.</summary>
-		///<example></example>
-		public string muxingMode {
+		IDictionary<string, string> _encoderSettings = null;
+		///<summary>Encoder settings used for encoding this stream.</summary>
+		public IDictionary<string, string> encoderSettings {
 			get {
-				if(_muxingMode == null)
-					_muxingMode = miGetString("MuxingMode");
-				return _muxingMode;
+				if(_encoderSettings == null) {
+					_encoderSettings = new Dictionary<string, string>();
+					String settings = encoderSettingsRaw;
+					foreach(var setting in settings.Split('/')) {
+						var keyValue = setting.Trim().Split('=');
+						if(keyValue.Length == 2) {
+							if(!_encoderSettings.ContainsKey(keyValue[0]))
+								_encoderSettings.Add(keyValue[0], keyValue[1]);
+						}
+					}
+				}
+				return _encoderSettings;
 			}
 		}
-
-
-		float _frameRate = float.MinValue;
-		///<summary>Frame rate of the stream in frames per second.</summary>
-		///<example>Standard film is 24FPS.</example>
-		public float frameRate {
-			get {
-				if(_frameRate == float.MinValue)
-					_frameRate = miGetFloat("FrameRate");
-				return _frameRate;
-			}
-		}
-		#endregion
-
-		#region VideoAudioTextImageCommon
-		string _compressionMode = null;
-		///<summary></summary>
-		///<example></example>
-		public string compressionMode {
-			get {
-				if(_compressionMode == null)
-					_compressionMode = miGetString("Compression_Mode");
-				return _compressionMode;
-			}
-		}
-
-
-		string _compressionRatio = null;
-		///<summary></summary>
-		///<example></example>
-		public string compressionRatio {
-			get {
-				if(_compressionRatio == null)
-					_compressionRatio = miGetString("Compression_Ratio");
-				return _compressionRatio;
-			}
-		}
-
-
-		int _bitDepth = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int bitDepth {
-			get {
-				if(_bitDepth == int.MinValue)
-					_bitDepth = miGetInt("BitDepth");
-				return _bitDepth;
-			}
-		}
-
 		#endregion
 
 		#region GeneralVideoAudioTextImageMenuCommon
@@ -193,10 +137,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		string _codecCommonName = null;
 		///<summary>Common name of the codec.</summary>
-		///<example></example>
 		public string codecCommonName {
 			get {
 				if(_codecCommonName == null)
@@ -206,10 +148,146 @@ namespace MediaInfoDotNet.Models
 		}
 		#endregion
 
+		#region GeneralVideoAudioTextMenu
+		int _delay = int.MinValue;
+		///<summary>Stream delay (e.g. to sync audio/video) in ms.</summary>
+		public int delay {
+			get {
+				if(_delay == int.MinValue)
+					_delay = miGetInt("Delay");
+				return _delay;
+			}
+		}
+
+		int _duration = int.MinValue;
+		///<summary>Duration of the stream in milliseconds.</summary>
+		public int duration {
+			get {
+				if(_duration == int.MinValue)
+					_duration = miGetInt("Duration");
+				return _duration;
+			}
+		}
+		#endregion
+
+		#region VideoAudioTextCommon
+		int _bitRate = int.MinValue;
+		///<summary>The bit rate of this stream, in bits per second</summary>
+		public int bitRate {
+			get {
+				if(_bitRate == int.MinValue)
+					_bitRate = miGetInt("BitRate");
+				return _bitRate;
+			}
+		}
+
+		int _bitRateMaximum = int.MinValue;
+		///<summary>The maximum bitrate of this stream in BPS.</summary>
+		public int bitRateMaximum {
+			get {
+				if(_bitRateMaximum == int.MinValue)
+					_bitRateMaximum = miGetInt("BitRate_Maximum");
+				return _bitRateMaximum;
+			}
+		}
+
+		int _bitRateMinimum = int.MinValue;
+		///<summary>The minimum bitrate of this stream in BPS.</summary>
+		public int bitRateMinimum {
+			get {
+				if(_bitRateMinimum == int.MinValue)
+					_bitRateMinimum = miGetInt("BitRate_Minimum");
+				return _bitRateMinimum;
+			}
+		}
+
+		int _bitRateNominal = int.MinValue;
+		///<summary>The maximum allowed bitrate, in BPS, with the encoder
+		/// settings used. Some encoders report the average BPS.</summary>
+		public int bitRateNominal {
+			get {
+				if(_bitRateNominal == int.MinValue)
+					_bitRateNominal = miGetInt("BitRate_Nominal");
+				return _bitRateNominal;
+			}
+		}
+
+		string _bitRateMode = null;
+		///<summary>Mode (CBR, VBR) used for bit allocation.</summary>
+		public string bitRateMode {
+			get {
+				if(_bitRateMode == null)
+					_bitRateMode = miGetString("BitRate_Mode");
+				return _bitRateMode;
+			}
+		}
+
+		string _muxingMode = null;
+		///<summary>How the stream is muxed into the container.</summary>
+		public string muxingMode {
+			get {
+				if(_muxingMode == null)
+					_muxingMode = miGetString("MuxingMode");
+				return _muxingMode;
+			}
+		}
+
+		int _frameCount = int.MinValue;
+		///<summary>The total number of frames (e.g. video frames).</summary>
+		public int frameCount {
+			get {
+				if(_frameCount == int.MinValue)
+					_frameCount = miGetInt("FrameCount");
+				return _frameCount;
+			}
+		}
+
+		float _frameRate = float.MinValue;
+		///<summary>Frame rate of the stream in frames per second.</summary>
+		public float frameRate {
+			get {
+				if(_frameRate == float.MinValue)
+					_frameRate = miGetFloat("FrameRate");
+				return _frameRate;
+			}
+		}
+		#endregion
+
+		#region VideoAudioTextImageCommon
+		string _compressionMode = null;
+		///<summary>Compression mode (lossy or lossless).</summary>
+		public string compressionMode {
+			get {
+				if(_compressionMode == null)
+					_compressionMode = miGetString("Compression_Mode");
+				return _compressionMode;
+			}
+		}
+
+		string _compressionRatio = null;
+		///<summary>Ratio of current size to uncompressed size.</summary>
+		public string compressionRatio {
+			get {
+				if(_compressionRatio == null)
+					_compressionRatio = miGetString("Compression_Ratio");
+				return _compressionRatio;
+			}
+		}
+
+		int _bitDepth = int.MinValue;
+		///<example>Stream bit depth (16, 24, 32...)</example>
+		public int bitDepth {
+			get {
+				if(_bitDepth == int.MinValue)
+					_bitDepth = miGetInt("BitDepth");
+				return _bitDepth;
+			}
+		}
+		#endregion
+
 		#region VideoAudioTextImageMenuCommon
 		string _language = null;
-		///<summary></summary>
-		///<example></example>
+		///<summary>2-letter (if available) or 3-letter ISO code.</summary>
 		public string language {
 			get {
 				if(_language == null)
@@ -219,73 +297,21 @@ namespace MediaInfoDotNet.Models
 		}
 		#endregion
 
-		#region GeneralVideoAudioTextImageCommon
-
-		DateTime _encodedDate = DateTime.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public DateTime encodedDate {
+		#region VideoImageCommon
+		float _pixelAspectRatio = float.MinValue;
+		///<summary>Ratio of pixel width to pixel height.</summary>
+		public float pixelAspectRatio {
 			get {
-				if(_encodedDate == DateTime.MinValue)
-					_encodedDate = miGetDateTime("Encoded_Date");
-				return _encodedDate;
+				if(_pixelAspectRatio == float.MinValue)
+					_pixelAspectRatio = miGetFloat("PixelAspectRatio");
+				return _pixelAspectRatio;
 			}
 		}
-
-
-		string _encoderLibrary = null;
-		///<summary></summary>
-		///<example></example>
-		public string encoderLibrary {
-			get {
-				if(_encoderLibrary == null)
-					_encoderLibrary = miGetString("Encoded_Library");
-				return _encoderLibrary;
-			}
-		}
-
-
-		string _internetMediaType = null;
-		///<summary>Media type of stream, formerly called MIME type.</summary>
-		///<example>audio/x-aac, image/png, audio/mp3</example>
-		public string internetMediaType {
-			get {
-				if(_internetMediaType == null)
-					_internetMediaType = miGetString("InternetMediaType");
-				return _internetMediaType;
-			}
-		}
-
-
-		long _streamSize = long.MinValue;
-		///<summary>Stream size in bytes.</summary>
-		public long streamSize {
-			get {
-				if(_streamSize == long.MinValue)
-					_streamSize = miGetLong("StreamSize");
-				return _streamSize;
-			}
-		}
-
-		
-		string _encoderSettings = null;
-		///<summary>Settings used to configure the encoder.
-		///Format: name=value, each separated with a '/'</summary>
-		public string encoderSettings{
-			get {
-				if(_encoderSettings == null)
-					_encoderSettings = miGetString("Encoded_Library_Settings");
-				return _encoderSettings;
-			}
-		}
-
 		#endregion
 
 		#region VideoTextCommon
-
 		string _frameRateMode = null;
-		///<summary>Frame rate mode of stream.</summary>
-		///<example>Constant frame rate:CFR, Variable frame rate:VFR</example>
+		///<summary>Frame rate mode (CFR, VFR) of stream.</summary>
 		public string frameRateMode {
 			get {
 				if(_frameRateMode == null)
@@ -293,41 +319,11 @@ namespace MediaInfoDotNet.Models
 				return _frameRateMode;
 			}
 		}
-
-		#endregion
-
-		#region GeneralVideoAudioTextMenu
-
-		int _delay = int.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public int delay {
-			get {
-				if(_delay == int.MinValue)
-					_delay = miGetInt("Delay");
-				return _delay;
-			}
-		}
-
-
-		int _duration = int.MinValue;
-		///<summary>Duration of the stream in milliseconds.</summary>
-		///<example>A 2 hour and 16 minute stream returns 8160000.</example>
-		public int duration {
-			get {
-				if(_duration == int.MinValue)
-					_duration = miGetInt("Duration");
-				return _duration;
-			}
-		}
-
 		#endregion
 
 		#region VideoTextImageCommon
-
 		int _height = int.MinValue;
-		///<summary></summary>
-		///<example></example>
+		///<summary>Height in pixels.</summary>
 		public int height {
 			get {
 				if(_height == int.MinValue)
@@ -336,10 +332,8 @@ namespace MediaInfoDotNet.Models
 			}
 		}
 
-
 		int _width = int.MinValue;
-		///<summary></summary>
-		///<example></example>
+		///<summary>Width in pixels.</summary>
 		public int width {
 			get {
 				if(_width == int.MinValue)
@@ -347,24 +341,6 @@ namespace MediaInfoDotNet.Models
 				return _width;
 			}
 		}
-
 		#endregion
-
-		#region VideoImageCommon
-		
-		float _pixelAspectRatio = float.MinValue;
-		///<summary></summary>
-		///<example></example>
-		public float pixelAspectRatio {
-			get {
-				if(_pixelAspectRatio == float.MinValue)
-					_pixelAspectRatio = miGetFloat("PixelAspectRatio");
-				return _pixelAspectRatio;
-			}
-		}
-		
-
-		#endregion
-
 	}
 }
