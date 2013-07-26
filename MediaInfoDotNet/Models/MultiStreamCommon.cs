@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+ * MediaInfo.NET - A fast, easy-to-use .NET wrapper for MediaInfo.
+ * Use at your own risk, under the same license as MediaInfo itself.
+ * Copyright (C) 2012 Charles N. Burns
+ * 
+ * Official source code: https://code.google.com/p/mediainfo-dot-net/
+ * 
+ ******************************************************************************
+ * MultiStreamCommon.cs
+ * 
+ * Presents information common to more than one stream type.
+ * 
+ ******************************************************************************
+ */
+
+using System;
 using MediaInfoLib;
 using System.Collections.Generic;
 
@@ -341,6 +356,29 @@ namespace MediaInfoDotNet.Models
 				return _width;
 			}
 		}
+
+		// Darrell Turner submitted the code for originalHeight and originalWidth
+		int _originalheight = int.MinValue;
+		///<summary>Original Height in pixels. For use with, e.g. ProRes files with aperture set.</summary>
+		public int originalHeight {
+			get {
+				if(_originalheight == int.MinValue)
+					_originalheight = miGetInt("Height_Original");
+				return _originalheight;
+			}
+		}
+
+		// Darrell Turner submitted the code for originalHeight and originalWidth
+		int _originalwidth = int.MinValue;
+		///<summary>Original Width in pixels. For use with, e.g. ProRes files with aperture set.</summary>
+		public int originalWidth {
+			get {
+				if(_originalwidth == int.MinValue)
+					_originalwidth = miGetInt("Width_Original");
+				return _originalwidth;
+			}
+		}
+
 		#endregion
 	}
 }
