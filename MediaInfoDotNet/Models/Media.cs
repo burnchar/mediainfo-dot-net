@@ -3,6 +3,8 @@
  * Use at your own risk, under the same license as MediaInfo itself.
  * Copyright (C) 2012 Charles N. Burns
  * 
+ * Official source code: https://code.google.com/p/mediainfo-dot-net/
+ * 
  ******************************************************************************
  * StreamBaseClass.cs
  * 
@@ -14,13 +16,15 @@
 using System;
 using MediaInfoLib;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace MediaInfoDotNet.Models
 {
 	///<summary>Implements features common to all media types.</summary>
 	public abstract class Media : IDisposable
 	{
-		///<summary>Used to create a stream-specific object, such as an audio
+		///<summary>Constructor to create a MediaInfo StreamKind-specific object, such as an audio
 		///stream, for use by an existing MediaFile object.</summary>
 		///<param name="mediaInfo">A pre-initialized MediaInfo object.</param>
 		///<param name="id">The MediaInfo ID for this stream.</param>
@@ -39,6 +43,42 @@ namespace MediaInfoDotNet.Models
 				this.id = id;
 			}
 		}
+
+		/// <summary>Constructor to create a MediaInfo stream using a .NET System.IO.Stream instead of a file.</summary>
+		/// <param name="stream">A System.IO.Stream associated with the media data.
+		/// Not to be confused with the MediaInfo stream types like "ImageStream" or "AudioStream"</param>
+		/// <param name="chunkSize">The size, in bytes, to read at any one time from the stream.</param>
+		// Submitted by Ryan Haney. Untested.
+		public Media(Stream stream, int chunkSize) {
+			this.disposed = false;
+			this.mediaInfo = new MediaInfo();
+			var buffer = new byte[chunkSize];
+			int bytesRead;
+			this.mediaInfo.Open_Buffer_Init(stream.Length, 0);
+
+			do {
+				bytesRead = stream.Read(buffer, 0, chunkSize);
+				GCHandle GC = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+				IntPtr ipBuffer = GC.AddrOfPinnedObject();
+
+				if(this.mediaInfo.Open_Buffer_Continue(ipBuffer, (IntPtr)bytesRead) == 0) {
+					GC.Free();
+					break;
+				}
+				GC.Free();
+
+				if(stream.CanSeek && this.mediaInfo.Open_Buffer_Continue_GoTo_Get() != -1) {
+					long position = stream.Seek(
+						this.mediaInfo.Open_Buffer_Continue_GoTo_Get(),
+						SeekOrigin.Begin
+					);
+					this.mediaInfo.Open_Buffer_Init(stream.Length, position);
+				}
+			} while(bytesRead > 0);
+
+			this.mediaInfo.Open_Buffer_Finalize();
+		}
+
 
 		///<summary>Complete path to the current media file.</summary>
 		public string filePath { get; private set; }

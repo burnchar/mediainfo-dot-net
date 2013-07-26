@@ -1,7 +1,8 @@
 ﻿/******************************************************************************
  * MediaInfo.NET - A fast, easy-to-use .NET wrapper for MediaInfo.dll
  * 
- * New versions available from http://code.google.com/p/mediainfo-dot-net/
+ * Official source code: https://code.google.com/p/mediainfo-dot-net/
+ * Feature requests are welcome.
  * 
  * Use at your own risk, under the same license as MediaInfo itself.
  * 
@@ -9,7 +10,10 @@
  * MediaInfo project at: http://mediainfo.sourceforge.net
  * 
  * Copyright (C) Charles N. Burns
- * 
+ * Contributers:
+ *  Ryan Haney    : Support .NET Streams for input (rather than just files)
+ *  Darrell Turner: Suggested I change the license to same as MediaInfo
+ *                  Added originalHeight and originalWidth properties
  ******************************************************************************
  * 
  * MediaInfo.cs
@@ -17,26 +21,34 @@
  * Library entrypoint.
  * 
  * To make this work in your .NET project:
- * 1) Add this DLL, MediaInfoDotNet.dll, to your project's "references"
+ * 1) Add this DLL, "MediaInfoDotNet.dll", to your project's "references"
  * 2) Copy MediaInfo.DLL into each subfolder of your project's "bin\" folder
  *    You can download it from http://mediainfo.sourceforge.net
- *    Do not try to add MediaInfo.dll to your "references". Wrong type of DLL.
+ *    Do not try to add "MediaInfo.dll" to "references". Wrong type of DLL.
  */
 
 using System;
 using System.Collections.Generic;
 using MediaInfoLib;
 using MediaInfoDotNet.Models;
+using System.IO;
 
 namespace MediaInfoDotNet
 {
 	///<summary>Represents a media file.</summary>
 	public sealed class MediaFile : GeneralStream
 	{
-		///<summary>MediaFile constructor.</summary>
+		///<summary>MediaFile constructor for use with file paths.</summary>
 		///<param name="filePath">Complete path and name of a file.</param>
 		///<example>"c:\pics\me.jpg", "/home/charles/me.mkv"</example>
 		public MediaFile(string filePath) : base(filePath) {
+		}
+
+		/// <summary>MediaFile constructor for use with streams.</summary>
+		/// <param name="stream">The System.IO.Stream associated with the media data.</param>
+		/// <param name="chunkSize">The size, in bytes, to read at any one time from the stream.</param>
+		public MediaFile(Stream stream, int chunkSize = 65536)
+			: base(stream, chunkSize) {
 		}
 
 

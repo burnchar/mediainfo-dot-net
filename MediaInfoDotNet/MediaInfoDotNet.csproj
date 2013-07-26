@@ -65,15 +65,15 @@
   <ItemGroup>
     <Compile Include="MediaFile.cs" />
     <Compile Include="MediaInfoDLL.cs" />
-    <Compile Include="Models\AudioStream.cs" />
-    <Compile Include="Models\ChapterStream.cs" />
-    <Compile Include="Models\GeneralStream.cs" />
-    <Compile Include="Models\ImageStream.cs" />
+    <Compile Include="Models\StreamKind\AudioStream.cs" />
+    <Compile Include="Models\StreamKind\OtherStream.cs" />
+    <Compile Include="Models\StreamKind\GeneralStream.cs" />
+    <Compile Include="Models\StreamKind\ImageStream.cs" />
     <Compile Include="Models\MultiStreamCommon.cs" />
-    <Compile Include="Models\MenuStream.cs" />
+    <Compile Include="Models\StreamKind\MenuStream.cs" />
     <Compile Include="Models\Media.cs" />
-    <Compile Include="Models\TextStream.cs" />
-    <Compile Include="Models\VideoStream.cs" />
+    <Compile Include="Models\StreamKind\TextStream.cs" />
+    <Compile Include="Models\StreamKind\VideoStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
